@@ -60,7 +60,7 @@ dplot1$key<-factor(dplot1$key, levels = c("Preference","Competence", "Norms", "R
 
 dplot1  %>% ggplot(aes(value)) +
   facet_wrap(~ key, scales = "free", )+ geom_histogram(binwidth = 1)+theme_apa()+
-  labs(x = "", y = "")+ scale_x_discrete(limits = c(-5,0, 5))+ ylim(0, 200)
+  labs(x = "", y = "")+ scale_x_continuous(limits = c(-5, 5))+ ylim(0, 200)
 
 Sa1preferenceplot <- ggstatsplot::gghistostats(
   data = data1, # data from which variable is to be taken
@@ -166,7 +166,7 @@ dplot1b <- data1b %>% select(preference, competence, normative, regret)%>%
 dplot1b$key<-factor(dplot1b$key, levels = c("Preference","Competence", "Norms", "Regret"))
 dplot1b  %>% ggplot(aes(value)) +
   facet_wrap(~ key, scales = "free")+ geom_histogram(binwidth = 1)+theme_apa()+
-  labs(x = "", y = "")+ scale_x_discrete(limits = c(-5,0, 5))+ ylim(0, 200)
+  labs(x = "", y = "")+ scale_x_continuous(limits = c(-5,0, 5))+ ylim(0, 200)
 
 
 S1bpreferenceplot <- ggstatsplot::gghistostats(
@@ -288,7 +288,7 @@ dplot2$key<-factor(dplot2$key, levels = c("Preference","Competence",
 
 dplot2 %>% ggplot(aes(value)) + 
   facet_wrap(~ key, scales = "free")+ geom_histogram(binwidth = 1)+theme_apa()+
-  labs(x = "", y = "")+ scale_x_discrete(limits = c(-5,0,5))+ ylim(0, 250) 
+  labs(x = "", y = "")+ scale_x_continuous(limits = c(-5,0,5))+ ylim(0, 250) 
 
 
 S2preferenceplot <- ggstatsplot::gghistostats(
