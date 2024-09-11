@@ -1,0 +1,22 @@
+Exercises R Paper replication:
+
+1. Adjust the code so that every output is saved automatically. Make sure that your code completes the following:
+- Global path that can easily be adjusted
+- Folder (make separate folders for tables and graphs)
+- File name
+- Defined size/format
+- Extra: Sometimes to get an overview of all the graphs it is helpful if they are all saved in one pdf as well.
+
+2. The code is repetitive when producing graphs. 
+Can you think of a better way to write this so that if something needs to be adjusted in all graphs, it can be done with one adjustment? 
+By adjusting the code, it should also be easier to add another outcome variable, if desired. 
+
+3. Setup renv to track the packages used in the replication. 
+
+4. The commenting of the markdown file is rather sparse. 
+Consider what could be improved and why it is important. 
+For instance, comments should include the purpose of the choice of coding and not simply what the code does. 
+
+5. The data contains a considerable fraction of NA values. Check whether you understand how these are handled in the code. 
+What could be adjusted and how would this affect the output?
+ 
