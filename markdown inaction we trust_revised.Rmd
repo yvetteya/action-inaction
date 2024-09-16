@@ -1,0 +1,201 @@
+---
+title: "Inaction We Trust"
+author: "Adrien Fillon"
+date: "27/01/2021"
+output:
+  word_document:
+    toc: yes
+    toc_depth: '3'
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+# Initialize renv for package management
+if (!requireNamespace("renv", quietly = TRUE)) {
+  install.packages("renv")
+}
+renv::init()
+
+# List of required packages
+list_of_packages <- c(
+  "report", "dplyr", "psych", "ggplot2", "tidyverse", "corrr", "corrplot", 
+  "PerformanceAnalytics", "Hmisc", "ggstatsplot", "jtools", "metan", 
+  "ggthemes", "ggpubr", "apaTables", "insight", "parameters"
+)
+
+# Check for and install missing packages
+new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) {
+  install.packages(new_packages, dependencies = TRUE)
+}
+
+# Load all packages (use invisible to suppress unnecessary output)
+invisible(lapply(list_of_packages, library, character.only = TRUE))
+
+# Global path for saving plots
+plot_save_path <- "path/to/your/plots"  # Define the path to save your plots
+
+# Ensure the directory exists or create it
+if (!dir.exists(plot_save_path)) {
+  dir.create(plot_save_path, recursive = TRUE)
+}
+
+# Setting global formatting options
+options(scipen = 999, digits = 3)
+
+# Snapshot the current state of the R environment using renv
+renv::snapshot()
+
+```
+
+
+# Study 1a
+
+```{r}
+# Read the dataset, specifying NA strings
+data1 <- read.csv("inactionwetrust_study1.csv", na.strings = c("", "NA"))
+
+# Data cleaning
+## Remove the first row (containing variable descriptions and practice data)
+data1 <- data1[-1, ]
+
+## Select relevant columns only
+cols_to_keep <- c("preference", "competence", "norms", "Q55", "check1", 
+                  "check2", "check3", "sex", "Age")
+data1 <- data1[, cols_to_keep]
+
+# Data transformation
+## Convert relevant columns to numeric
+convert_to_numeric <- c("preference", "competence", "norms", "Q55", "Age")
+data1[convert_to_numeric] <- lapply(data1[convert_to_numeric], as.numeric)
+
+## Rename 'Q55' to 'regret'
+data1 <- data1 %>%
+  rename(regret = Q55)
+
+# Summary statistics
+## Generate descriptive statistics for selected columns
+summary1 <- data1 %>%
+  select(preference, competence, norms, regret, sex, Age) %>%
+  psych::describe(quant = c(0.25, 0.75)) %>%
+  as_tibble(rownames = "rowname")
+
+## Display descriptive statistics in a formatted table
+knitr::kable(summary1, digits = 2, caption = "Summary Study 1a", align = "c")
+
+# Gender summary
+## Create and display a table summarizing gender distribution
+table_gender1 <- table(data1$sex)
+knitr::kable(table_gender1, digits = 2, caption = "Summary Gender", align = "c")
+
+
+########################### Plot Histograms ####################################
+# Data preparation for histogram faceting
+dplot1 <- data1 %>%
+  select(preference, competence, norms, regret) %>%
+  rename(Preference = preference, Competence = competence, Norms = norms, 
+         Regret = regret) %>%
+  gather()
+
+# Set the factor levels for the key
+dplot1$key <- factor(dplot1$key, levels = c("Preference", "Competence", 
+                                            "Norms", "Regret"))
+
+# Plot multiple histograms with facets
+dplot1 %>%
+  ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_histogram(binwidth = 1) +
+  theme_apa() +
+  labs(x = "", y = "") +
+  scale_x_continuous(limits = c(-5, 5)) +
+  ylim(0, 200)
+
+# Variables to plot
+variables <- c("preference", "competence", "norms", "regret")
+variable_names <- c("Preference", "Competence", "Norms", "Regret")
+
+# Initialize a list to store plots
+plot_list <- list()
+
+# Loop to create and store plots
+for (i in seq_along(variables)) {
+  # Create the plot using ggstatsplot::gghistostats
+  plot <- ggstatsplot::gghistostats(
+    data = data1,
+    x = !!rlang::sym(variables[i]),  # Dynamically reference variable
+    xlab = variable_names[i],
+    test.value = 0
+  )
+  
+  # Store the plot in the list
+  plot_list[[i]] <- plot
+  
+  # Display the plot immediately in RMarkdown (for inline display)
+  print(plot)
+  
+  # Save the plot to a file using the global path
+  ggsave(
+    filename = file.path(plot_save_path, paste0("Study1a-", 
+                                                variables[i], ".png")),
+    plot = plot,
+    dpi = 600,
+    scale = 1.7
+  )
+}
+
+# Combine all the plots into one image (optional for separate combined image)
+combined_plot <- ggpubr::ggarrange(
+  plotlist = plot_list,
+  common.legend = TRUE
+)
+
+# Display the combined plot
+print(combined_plot)
+
+# Save the combined plot using the global path
+ggsave(
+  filename = file.path(plot_save_path, "Study1a-4_in_one.png"),
+  plot = combined_plot,
+  width = 11,
+  height = 10,
+  dpi = 600,
+  scale = 1
+)
+
+
+############################# T-tests ##########################################
+# List of variables to perform t-tests on
+variables <- c("preference", "competence", "norms", "regret")
+
+# Initialize a list to store the test results and reports
+test_results <- list()
+report_results <- list()
+
+# Loop over variables, perform t-test, and store reports
+for (var in variables) {
+  # Perform t-test
+  test_results[[var]] <- t.test(data1[[var]], mu = 0)
+  
+  # Generate report and store it
+  report_results[[var]] <- report(test_results[[var]])
+}
+
+# Print the reports
+for (var in variables) {
+  cat(paste0("Report for ", var, ":\n"))
+  print(report_results[[var]])
+  cat("\n")
+}
+
+
+
+```
+
+
