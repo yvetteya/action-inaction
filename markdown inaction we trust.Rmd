@@ -15,11 +15,9 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
-list.of.packages <- c("report", "dplyr", "psych", "ggplot2", "tidyverse", "corrr", "corrplot", "PerformanceAnalytics", "Hmisc", "ggstatsplot", "jtools", "metan", "ggstatsplot", "ggthemes", "ggpubr", "apaTables","insight", "parameters")
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[
-  ,"Package"])]
-if(length(new.packages)) install.packages(new.packages, dependencies = TRUE)
-invisible(lapply(list.of.packages, library, character.only = TRUE))
+packages <- c("report", "dplyr", "psych", "ggplot2", "tidyverse", "corrr", "corrplot", "PerformanceAnalytics", "Hmisc", "ggstatsplot", "jtools", "metan", "ggstatsplot", "ggthemes", "ggpubr", "apaTables","insight", "parameters")
+
+pacman::p_load(packages, character.only = TRUE)
 
 # setting formatting options
 options(scipen=999, digits =3)
