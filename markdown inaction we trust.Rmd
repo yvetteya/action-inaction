@@ -16,7 +16,7 @@ output:
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
 packages <- c("report", "dplyr", "psych", "ggplot2", "tidyverse", "corrr", "corrplot", "PerformanceAnalytics", "Hmisc", "ggstatsplot", "jtools", "metan", "ggstatsplot", "ggthemes", "ggpubr", "apaTables","insight", "parameters")
-
+install.packages("pacman")
 pacman::p_load(packages, character.only = TRUE)
 
 # setting formatting options
